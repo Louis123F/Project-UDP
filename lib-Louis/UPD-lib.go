@@ -1,31 +1,43 @@
 package liblouis
 
-type UDPHeader struct {
-	sourcePort      [2]byte
-	destinationPort [2]byte
-	length          [2]byte
-	checksum        [2]byte
-	data            []byte
+type UDPPackage struct {
+	sourcePort uint16
+
+	destinationPort uint16
+
+	//length(bytes) of UDP header + UDP data, minimum 8 bytes(UDP header)
+	length uint16
+
+	checksum uint16
+
+	data []uint8
 }
 
-func UnpackUPD(bytes []byte) UDPHeader {
+func UnpackUPD(rawUDP []uint8) UDPPackage {
 
-	var header UDPHeader
+	//rawUDP
+	//[16bits - source port	][16bits - destination port	]
+	//[16bits - length		][16bits - data				]
+	//[			length bytes - data						]
 
-	header.sourcePort[0] = bytes[0]
-	header.sourcePort[1] = bytes[1]
+	var header UDPPackage
 
-	header.destinationPort[0] = bytes[2]
-	header.destinationPort[1] = bytes[3]
+	header.sourcePort = uint16(rawUDP[0] + rawUDP[1])
 
-	header.length[0] = bytes[4]
-	header.length[1] = bytes[5]
+	header.destinationPort = uint16(rawUDP[2] + rawUDP[3])
 
-	header.checksum[0] = bytes[6]
-	header.checksum[1] = bytes[7]
+	header.length = uint16(rawUDP[4] + rawUDP[5])
 
-	var dataLength int = int(header.length[0]) + int(header.length[1])
-	header.data = make([]byte, dataLength)
+	header.checksum = uint16(rawUDP[6] + rawUDP[7])
+
+	header.data = make([]uint8, header.length)
+
+	//fill data of size header.length with chuncks of 1 byte
+	for i := 0; i < len(header.data); i++ {
+		header.data[i] = uint8(rawUDP[8+i])
+	}
 
 	return header
 }
+
+func PackUDP()
