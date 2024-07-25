@@ -13,7 +13,7 @@ type UDPPackage struct {
 	data []uint8
 }
 
-func UnpackUPD(rawUDP []uint8) UDPPackage {
+func PackUPD(rawUDP []uint8) UDPPackage {
 
 	//rawUDP
 	//[16bits - source port	][16bits - destination port	]
@@ -40,4 +40,10 @@ func UnpackUPD(rawUDP []uint8) UDPPackage {
 	return header
 }
 
-func PackUDP()
+func UnpackUDP(packedUDP UDPPackage) []uint8 {
+	var lengthInBits uint16
+
+	lengthInBits = 4*8 + (packedUDP.length * 8)
+
+	//for i := 0; i < len()
+}
